@@ -3,95 +3,122 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\M_Akuntansi;
+use App\Models\M_Transaksi;
+use App\Models\M_Detail;
 
 class AkuntansiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
-    {   
-        $data = M_Akuntansi::all();
-        return view("Index")->with(["data"=> $data]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
-        return view("create");
+        
+        $data = M_Transaksi::all();
+        return view("Index")->with(["data" => $data]);
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function create()
     {
-        $data = $request->except(['_token']);
-        M_Akuntansi::insert($data);
-        return redirect('/');
+        return view("create");
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // public function store(Request $request)
+    // {
+    //     $dataTransaksi = $request->except(['_token']);
+    //     $transaksi = M_Transaksi::create($dataTransaksi);
+
+    //     $dataDetail = [
+    //         'keterangan' => $request->input('keterangan_detail'),
+    //         'dk' => $request->input('dk'),
+    //         'jumlah' => $request->input('jumlah_detail'),
+    //         'm_transaksi_id' => $transaksi->id,
+    //     ];
+
+    //     $transaksi->details()->create($dataDetail);
+
+    //     return redirect('/');
+    // }
+//     public function store(Request $request)
+// {
+//     // Log atau dd() untuk memeriksa data
+//     \Log::info('Data Transaksi: ' . json_encode($request->except(['_token'])));
+    
+//     $dataTransaksi = $request->except(['_token']);
+//     $transaksi = M_Transaksi::create($dataTransaksi);
+
+//     $dataDetail = [
+//         'keterangan' => $request->input('keterangan_detail'),
+//         'dk' => $request->input('dk'),
+//         'jumlah' => $request->input('jumlah_detail'),
+//         'm_transaksi_id' => $transaksi->id,
+//     ];
+
+//     // Log atau dd() untuk memeriksa data detail
+//     \Log::info('Data Detail: ' . json_encode($dataDetail));
+
+//     $transaksi->details()->create($dataDetail);
+
+//     return redirect('/');
+// }
+public function store(Request $request)
+{
+    $request->validate([
+        'keterangan' => 'required',
+        // ... tambahkan aturan validasi lainnya
+    ]);
+
+    $dataTransaksi = $request->except(['_token']);
+    $dataTransaksi['keterangan'] = $request->input('keterangan'); // Pastikan nilai 'keterangan' sudah ada
+    $transaksi = M_Transaksi::create($dataTransaksi);
+
+    $dataDetail = [
+        'keterangan' => $request->input('keterangan_detail'),
+        'dk' => $request->input('dk'),
+        'jumlah' => $request->input('jumlah_detail'),
+        'm_transaksi_id' => $transaksi->id,
+    ];
+
+    $transaksi->details()->create($dataDetail);
+
+    return redirect('/');
+}
+
+
     public function show($id)
     {
-        $data = M_Akuntansi::findOrFail($id);
-        return view("show")->with(["data"=> $data]);
-        return redirect('/');
+        $data = M_Transaksi::findOrFail($id);
+        return view("show")->with(["data" => $data]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
+        $data = M_Transaksi::findOrFail($id);
+        return view("edit")->with(["data" => $data]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        $item = M_Akuntansi::findOrFail($id);
-        $data = $request->except(['_token']);
-        $item->update($data);
-        return redirect('/');
+        $transaksi = M_Transaksi::findOrFail($id);
+        $dataTransaksi = $request->except(['_token']);
+        $transaksi->update($dataTransaksi);
 
+        $dataDetail = [
+            'keterangan' => $request->input('keterangan_detail'),
+            'dk' => $request->input('dk'),
+            'jumlah' => $request->input('jumlah_detail'),
+        ];
+
+        $transaksi->details()->update($dataDetail);
+
+        return redirect('/');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $data = M_Akuntansi::findOrFail($id);
-        $data->delete();
+        $transaksi = M_Transaksi::findOrFail($id);
+
+        $transaksi->details()->delete();
+
+        $transaksi->delete();
         return redirect('/');
     }
 }

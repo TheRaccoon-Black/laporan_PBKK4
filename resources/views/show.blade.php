@@ -1,7 +1,6 @@
-@extends('layout.default')
-
+@extends('main')
+@section('title', 'Edit')
 @section('content')
-
 <section>
     <div class="container">
         <div class="row">
@@ -10,7 +9,7 @@
                 <form action="{{ url('/update/'.$data->id)}}" method="POST">
                     <div class="form-group">
                         <label for="keterangan">Nama transaksi</label>
-                        <input type="text" name="keterangan" class="form-control" value="{{ $data->keterangan }}">
+                        <input type="text" name="keterangan_detail" class="form-control" value="{{ $data->keterangan }}">
                     </div>
                     <div class="form-group">
                         <label for="dk">Debit/Kredit</label>
@@ -18,10 +17,10 @@
                     </div>
                     <div class="form-group">
                         <label for="jumlah">Jumlah transaksi(Rp)</label>
-                        <input type="number" name="jumlah" class="form-control" value="{{ $data->jumlah }}">
+                        <input type="number" name="jumlah_detail" class="form-control" value="{{ $data->jumlah }}">
                     </div>
                     <div class="form-group mt-2">
-                        <button type="submit" class="btn btn-primary">Tambahkan</button>
+                        <button type="submit" class="btn btn-primary">perbarui </button>
                     </div>
                     <div class="form-group mt-2">
                         <a href="{{url('/')}}"> Kembali ke dashboard</a>
